@@ -33,9 +33,9 @@ function mqttConnect() {
 		   cleanSession: true,
 		   timeout:3,
 		   //keepAliveInterval: 10,
-		   <% if /https/.match(request.url) %>
+		   <%# if /https/.match(request.url) %>
 		   useSSL: true,
-		   <% end %>
+		   <%# end %>
 		   willMessage: lwt,
 		   onSuccess: function() {
 		       mqtt.subscribe('<%= @host.id %>/');
