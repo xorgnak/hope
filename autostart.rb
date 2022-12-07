@@ -25,3 +25,4 @@ end
 
 #@host.hire 'xorgnak', 'pedicabber', 'my group'
 #@host.priv 'xorgnak', Z4.priv.length - 1
+
