@@ -1,5 +1,5 @@
 
-var peer = new Peer('<%= @host.auth.session[params[:cha]] %>', { host: '<%= @host.id %>', port: 9000, path: '/peer', debug: 0 });
+var peer = new Peer('<%= @host.auth.session[params[:cha]] %>', { host: '<%= @host.id %>', port: 8999, path: '/peer', debug: 0 });
 var conn = peer.connect('<%= @host.auth.session[params[:cha]] %>');
 
 function peer_send(u, p) {
