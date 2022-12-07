@@ -4,7 +4,7 @@ module Z4
     def initialize *ch, &b
       @client = PahoMqtt::Client.new
       PahoMqtt.logger = 'paho_mqtt'
-      @client.connect('localhost', 1883)
+      @client.connect('broker.hivemq.com', 1883)
       @client.on_message do |message|
         handler(message.topic, message.payload)
       end
