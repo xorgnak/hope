@@ -1,0 +1,35 @@
+
+<input form='auth' type='hidden' name='cha' value='<%= params[:cha] %>'>
+
+
+
+<% if @host.data[:type] == 'private' %>
+<-- admin account -->
+<% if !params.has_key?(:ask) %>
+<h1><button form='auth' name='do' value='auth'>SCRAMBLE</h1>
+<% else %>
+<input type='hidden' name='token' value='<%= @token %>'>
+<h1><input form='auth' name='ans' placeholder='password'></h1>
+<% end %>
+
+<% elsif @host.data[:type] == 'business' %>
+<-- work accounts -->
+
+<% if params.has_key?(:invite) %>
+<input form='auth' type='hidden' name='make[invite]' value='<%= params[:invite] %>'>
+<h1><input form='auth' name='make[phone]' placeholder='phone'></h1>
+<% else %>
+<% if !params.has_key?(:sms) %>
+<h1><input form='auth' name='phone' placeholder='phone'></h1>
+<% else %>
+<h1><input form='auth' name='pin' placeholder='pin'></h1>
+<% end %>
+<% end %>
+<% else %>
+<-- traditional accounts -->
+<h1><input form='auth' name='auth[username]' placeholder='username'></h1>
+<h1><input form='auth' name='auth[password]' placeholder='password'></h1>
+
+<% end %>
+
+<h1><button form='auth' name='do' value='auth'>LOGIN</h1>

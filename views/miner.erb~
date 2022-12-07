@@ -1,0 +1,10 @@
+<div id='coins' style='text-align: left;'>
+<% @user.coins.members.each do |e| %>
+<% @coin = Z4.coin(e) %>
+<p><%= @coin.attr[:payload] %></p>
+<% end %>
+</div>
+<p style='width: 100%; text-align: center;'>
+<input id='payload' placeholder='payload'>
+<button class='material-icons mine'>send</button>
+</p>

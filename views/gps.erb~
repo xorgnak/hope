@@ -1,0 +1,26 @@
+let gps;
+let pos;
+let options;
+
+function success(p) {
+    pos = p;
+    $('#gps').css('color', 'green');
+}
+
+function error(err) {
+    $('#gps').css('color', 'red');
+    console.error(`ERROR(${err.code}): ${err.message}`);
+}
+
+options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0
+};
+
+if ('geolocation' in navigator) {
+    log({ color: 'grey', icon: 'gps_fixed', message: '<span id="gps" class="material-icons">gps_fixed</span> gps starting.' });
+    gps = navigator.geolocation.watchPosition(success, error, options)
+} else {
+    log({ color: 'red', icon: 'gps_fixed', message: '<span id="gps" class="material-icons">gps_fixed</span> gps failed.' });
+}

@@ -1,0 +1,6 @@
+<% Dir["public/#{@host.id}/*.img"].each do |e| %>
+<div style='width: 100%; text-align: center;'>
+<input type='radio' name='info[bg]' value='<%= e %>' >
+<img src='<%= e %>'>
+</div>
+<% end %>

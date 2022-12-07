@@ -1,0 +1,473 @@
+
+console.log('starting')
+var state = {
+    loaded: Math.round(Date.now() / 1000),
+    chance: [],
+    pos: '',
+	<% if params.has_key? :tok %>
+	vs: false,
+    adventure: '',
+    working: false,
+    work: '',
+    vapid: {},
+    cha: '<%= params[:cha] %>',
+	<% ['name', 'about', 'desc', 'class', 'rank', 'karma', 'credits', 'tokens', 'group', 'avatar'].each do |e| %>
+	<%= e %>: '<%= @host[:users][@host.auth.session[params[:cha]]][e] %>',
+	<% end %>
+
+        <% ['badges', 'items', 'users', 'groups'].each do |e| %>
+	<%= e %>: <%= JSON.generate(@host[:users][@host.auth.session[params[:cha]]][e]) %>,
+        <% end %>
+	
+	<% end %>
+};
+
+function chance(j) {
+    var this_chance = {
+	rolls: [],
+	total: 0,
+	roll: "",
+	success: false
+    };
+    
+    if (j.times !== undefined) { t = parseInt(j.times) } else { t = 1 }
+    if (j.sides !== undefined) { s = parseInt(j.sides) } else { s = 2 }
+    if (j.mod !== undefined) { m = parseInt(j.mod) } else { m = 0 }
+    if (j.win !== undefined) { a = parseInt(j.win) } else { a = s - 1 }
+    for (let i = 0; i < t; i++) {
+	r = Math.floor(Math.random() * s) + 1 + m;
+	this_chance.rolls.push(r);
+	this_chance.total += r;
+    }
+    this_chance.roll = t + 'd' + s + '+' + m + '&gt;&equals;' + a;
+    if (this_chance.total > a) { this_chance.success = true }
+    return this_chance;
+}
+
+function toJson(form) {
+    const array = $('form#' + form).serializeArray(); // Encodes the set of form elements as an array of names and values.
+    const json = {};
+    $.each(array, function () {
+	json[this.name] = this.value || "";
+    });
+    return json;
+}
+
+function log(j) {
+    console.log(j);
+    var disp = true;
+    // display callback
+    if (j.from != undefined) {
+	t = '<button class="to" style="font-size: small;" value="' + j.from  + '">' + j.from + '</button>';
+	tg = '<button class="material-icons give" style="font-size: small;" value="' + j.from  + '">volunteer_activism</button>';
+    } else {
+	t = '';
+	tg = '';
+    }
+    // display group
+    if (j.group != undefined) {
+	g = '<button class="grp" style="font-size: small;" value="@' + j.group  + '">@' + j.group + '</button>';
+    } else {
+	g = '';
+    }
+    
+    // display image
+    if (j.pic != undefined) {
+	i = '<img src="' + j.pic + '">';
+    } else {
+	i = '';
+    }
+    // display coordinates
+    if (j.gps != undefined) {
+	cg = '<button class="material-icons goto" style="font-size: small;" value="https://www.google.com/maps/dir/?api=1&dir_action=navagate&destination=' + j.gps + '">room</button>';
+    } else {
+	cg = ''
+    }
+    
+    if (j.vs == true) {
+	ch = '<button class="material-icons zap" style="font-size: small;" value="' + j.from + '">barcode_reader</button>'
+    } else {
+	ch = ''
+    }
+    
+    if (j.icon != undefined) {
+	c = j.icon
+    } else {
+	c = 'campaign'
+    }
+    // display user avatar
+    if (j.avatar != undefined) {
+      	a = '<img src="' + j.avatar + '" style="height: 32px; width: 32px; vertical-align: middle;">'
+    } else {
+      	a = ''
+    }
+    // agents and operators can see all messages
+//    disp = state.groups.includes(j.group)
+//    disp = state.users.includes(j.from)
+//    if (state.class >= 5) { disp = true; }
+    if (disp != false) {
+	if (j.pic != undefined && j.pic != '') {
+	    $('#log').append('<p style="margin: 0;"><span class="material-icons" style="color: ' + j.color + '">' + j.icon + '</span>' + a + tg  + t + cg + ch + g + j.message + '</p><p style="width: 100%; text-align: center;">' + i + '</p>')
+	} else {
+	    $('#log').append('<p style="margin: 0;"><span class="material-icons" style="color: ' + j.color + '">' + j.icon + '</span>' + a + tg + t + cg + ch + g + j.message + '</p>')
+	}
+	window.scrollTo(0, document.body.scrollHeight);
+    } else {
+	console.log("LOG", j);
+    }
+}
+
+$(document).on('click', '#login', function(ev) {
+    ev.preventDefault();
+    var here = window.location.href;
+    var cha = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    window.location = here + '?cha=' + cha;
+});
+   
+  window.vapidPublicKey = new Uint8Array(<%= Base64.urlsafe_decode64(public_key).bytes %>)
+  if (navigator.serviceWorker) {
+      navigator.serviceWorker.register('/sw.js?cha=<%= params[:cha] %>')
+          .then(function(reg) {
+	      console.log('Service worker change, registered the service worker');
+	      navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
+		  serviceWorkerRegistration.pushManager
+		      .subscribe({
+			  userVisibleOnly: true
+		      });
+		  serviceWorkerRegistration.pushManager.getSubscription()
+		      .then((subscription) => {
+			  state.vapid = subscription.toJSON();
+webpush({ body: "ready." });
+		      });
+	      });
+	  });
+  }
+
+  function webpush(j) {
+      h = {
+  title: j.title || '<%= @host.id %>',
+	  body: j.body || '',
+	  icon: j.icon || ''
+      }
+      $.post("/sw", { subscription: state.vapid, message: h }, function(d) {  console.log("WEBPUSH", d); });
+  }
+
+
+
+function mine() {
+    j = {
+	owner: '<%= params[:cha] %>',
+	payload: $("#payload").val(),
+	token: '<%= params[:tok] %>',
+	domain: '<%= @host.id %>',
+	for: 'self'
+    }
+    $.post('/js', j, function(data) { log(data);});
+}
+    <% if params.has_key? :tok %>
+    <%= erb :mqtt %>
+    <%= erb :peer %>
+    <%= erb :scan %>
+    <% end %>
+    <%= erb :gps %>
+
+$(function() {
+    
+	<% if params.has_key? :tok %>
+	
+    // disable empty messages
+    $('form#app').keyup(function(ev) {
+	if ($('#input').val() != '') {
+	    $('#send').css('color', 'green');
+	    $('#send').prop('disabled', false);
+	} else {
+	    $('#send').css('color', 'black');
+	    $('#send').prop('disabled', true);
+	}
+    });
+    $(document).on('click', '#tog_pic', function() {
+	if ($('#tog_pic').prop('checked')) {
+	    $(".hints").hide();
+	    $("#pic_hint").show();
+	    $('.hint').css('color', 'black');
+	} else {
+	    $('.hints').hide();
+	}
+    });
+    // toggle log;
+    $(document).on('click', '#tog', function() {
+	if ($('#tog').prop('checked')) {
+	    $('#log').hide();
+	} else {
+	    $('#log').show();
+	}
+    })
+    // background form interactions
+    $(document).on('click', '.do', function(ev){
+	ev.preventDefault();
+	var j = toJson('app');
+	j['do'] = $(this).val();
+	$.post('/js', j, function(data) {
+	    console.log("DO", data)
+	    if (data.reboot == true) {
+		log({ icon: "notifications", color: "red", message: "updating..." })
+		window.location.href = window.location.href
+	    }
+	});
+	$('form#app')[0].reset();
+	$('.foot').hide();
+	$('#info').show();
+    });
+    // change focus
+    $(document).on('click', '.tog', function(ev) {
+	ev.preventDefault();
+	$('.foot').hide();
+	$('#' + $(this).val()).show();
+	$('.tog').css('color', 'black');
+	$(this).css('color', 'orange');
+    });
+    // show help
+    $(document).on('click', '.hint', function(ev) {
+	ev.preventDefault();
+	$(".hints").hide();
+	$("#" + $(this).val()).show();
+  	$('.hint').css('color', 'black');
+	$(this).css('color', 'orange');
+    });
+    // prefix peer
+    $(document).on('click', '.to', function(ev) {
+	ev.preventDefault();
+	$(".foot").hide();
+	$("#info").show();
+	$("#input").val($(this).val() + ": ");
+	$('#input').focus();
+    });
+    // prefix group
+    $(document).on('click', '.grp', function(ev) {
+	ev.preventDefault();
+	$(".foot").hide();
+	$("#info").show();
+	$("#input").val($(this).val() + ": ");
+	$('#input').focus();
+    });
+    $(document).on('click', '.give', function(ev) {
+	ev.preventDefault();
+	$('.foot').hide();
+	$('#scan').show();
+	$("#scanned").val($(this).val());
+    });
+    // update rank
+    $(document).on('change', '#rank', function() {
+	$('.rank').hide();
+	$('#rank_' + $(this).val()).show();
+    });
+    $(document).on('change', '#class', function() {
+	$('.class').hide();
+	$('#class_' + $(this).val()).show();
+    });
+    // toggle groups
+    $(document).on('click', '#group-tog', function(ev) {
+	ev.preventDefault();
+	$('#group').toggle();
+    });
+    // generate address
+    $(document).on('click', '.mine', function(ev) {
+	ev.preventDefault();
+	mine();
+    });
+    // challange other player
+    $(document).on('click', '.zap', function(ev) {
+	ev.preventDefault();
+	if (state.adventure != '') {
+	    state.vs = true;
+	    peer_send($(this).val(), ' zapped you...');
+	    log({ icon: 'barcode_reader', color: 'gold', message: "you zapped " + $(this).val() + "." });
+	} else {
+	    log({ icon: 'barcode_reader', color: 'red', message: "you must be on an adventure to zap other players." });
+	}
+    });
+    // follow adventure track
+    $(document).on('click', '.play', function(ev) {
+	ev.preventDefault();
+	state.adventure = $(this).val();
+	log({ icon: 'shield', message: 'adventure: ' + state.adventure, color: 'gold' });
+    });
+    // goto
+    $(document).on('click', '.goto', function(ev) {
+	ev.preventDefault();
+	window.location.href = $(this).val();
+    });
+    // goto tag
+    //  $(document).on('change', 'select', function() {
+    //	console.log('change')
+    //	var here = window.location.href;
+    //	console.log('push', here, this.value);
+    //	window.location = here + '/' + this.value;
+    //    });
+    // goto tag
+    //    $(document).on('change', 'select', function() {
+    //	console.log('change')
+    //	var here = window.location.href;
+    //	console.log('goto', this.value);
+    //	window.location = '/' + this.value;
+    //  });
+    
+    
+    // luck
+    $(document).on('click', '#chance_try', function(ev) {
+	ev.preventDefault();
+      	var c = chance({ 
+      	    sides: $("#chance_sides").val(), 
+      	    times: $("#chance_times").val(), 
+      	    mod: $("#chance_mod").val(), 
+      	    win: $("#chance_win").val() 
+      	});
+      	console.log(c);
+      	var cc = 'red';
+      	if ( c.success == true ) { cc = 'green'; }
+	var ss = "";
+	c.rolls.forEach(function(e){ ss += "<span style='padding: 0 1% 0 1%;'>" + e + "</span>"; });
+      	var s = "<p style='margin: 0; font-size: small;'><span style='padding: 0 2% 0 2%;'>" + c.roll + "</span><span style='padding: 0 2% 0 2%; border: thin solid " + cc + "'>" + c.total + "</span><span class='material-icons'>arrow_right</span><span style='padding: 0 2% 0 2%; border: thin solid white;'>" + ss + "</span></p>";
+      	$("#chances").append(s);
+    });
+    // SEND
+    $(document).on('click', '#send', function(ev){
+	var i = $('#input').val();
+	h = { color: 'grey', icon: 'campaign', message: i, from: '<%= @host.auth.session[params[:cha]] %>' }
+	
+	if ($('#tog_pic').prop('checked')) {
+	    var canvas = document.getElementById('canvas');
+	    var dataURL = canvas.toDataURL();
+	    h['pic'] = dataURL;
+	    h['icon'] = 'image';
+	}
+	
+	if (state.pos != '') {
+	    h['gps'] = state.pos;
+	    h['icon'] = 'gps_fixed';
+	}
+	
+      	var pm = /.+: .*/g
+	var gm = /@.+: .*/g
+	if (gm.test(i)) {
+	    var ii = i.split(': ');
+	    h['group'] = ii[0].slice(1);
+	    h['message'] = ii[1];
+	    h['color'] = 'blue';
+	    if (state.avatar != '') {
+		h['avatar'] = state.avatar;
+	    }
+	    if (state.groups.includes(ii[0].slice(1))) {
+		sendMqtt('', h)
+	    }
+      	} else if (pm.test(i) ) {
+  	    var ii = i.split(': ');
+	    if (ii[0] == 'GPS') {
+		state.pos = ii[1].replace(' ', '+');
+		log({ icon: 'home', color: 'orange', message: ii[1] });
+	    } else if (ii[0] == 'NAME') {
+		state.name = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "name: " + ii[1] });
+	    } else if (ii[0] == 'DESC') {
+		state.desc = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "desc: " + ii[1] });
+	    } else if (ii[0] == 'ABOUT') {
+		state.about = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "about: " + ii[1] });
+	    } else if (ii[0] == 'IMG') {
+		state.avatar = ii[1]
+		if (ii[1] != '') {
+		    log({ icon: 'settings', color: 'orange', message: "avatar: <img style='width: 32px; height: 32px; vertical-align: middle;' src='" + ii[1] + "'>" });
+		} else {
+		    log({ icon: 'settings', color: 'orange', message: "avatar: unset." });
+		}
+	    } else if (ii[0] == 'LINK') {
+		state.link = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "link: <a href='" + ii[1] + "'>" + ii[1] + "</a>" });
+	    } else if (ii[0] == 'TIPS') {
+		state.tips = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "tips: <a href='" + ii[1] + "'>" + ii[1] + "</a>" });
+	    } else if (ii[0] == 'PLAY') {
+		state.vs = true;
+		state.working = false;
+		state.work = '';
+		state.adventure = ii[1];
+		var btn = '<button class="play" style="font-size: small;" value="' + state.adventure + '">' + state.adventure + '</button>'
+		log({ icon: 'shield', color: 'orange', message: 'scan other users and groups to earn adventure points.' });
+		sendMqtt('', {
+		    icon: 'shield',
+		    color: 'green',
+		    message: 'is now playing the ' + btn + ' adventure.'
+		});
+	    } else if (ii[0] == 'AWAY') {
+		state.vs = false;
+		state.working = false;
+		log({ icon: 'shield', color: 'orange', message: 'away...' });
+		sendMqtt('', { icon: 'shield', color: 'yellow', message:  state.name + ' is away. (' + ii[1] + ')' });
+		
+	    } else if (ii[0] == 'WORK') {
+		state.vs = false;
+		state.working = true;
+		state.work = ii[1];
+		state.adventure = '';
+		var btn = '<button class="work" style="font-size: small;" value="' + state.work + '">' + state.work + '</button>'
+		log({ icon: 'shield', color: 'blue', message: 'working: ' + ii[1] });
+		sendMqtt('', { icon: 'shield', color: 'blue', message: state.name + ' is working ' + btn });
+	    } else {
+//		if (state.users.includes(ii[0])) {
+      		    peer_send(ii[0], ii[1]);
+//		}
+	    }
+      	} else {
+	    console.log('SEND', h)
+//	    sendMqtt('', h)
+        }
+
+	$('.hints').hide();
+        $('form#app')[0].reset();
+	$('#send').css('color', 'black');
+	$('#send').prop('disabled', true);
+    });
+    // auth!
+    $(document).on('click', '#login', function(ev) {
+	ev.preventDefault();
+	var here = window.location.href;
+	var cha = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+	window.location = here + '?cha=' + cha;
+    });
+    // find beacon
+    function scanForAdvertisements() {
+	try {
+	    setInterval(function() { console.log(navigator.bluetooth); }, 1000);
+	    
+	    navigator.bluetooth.requestLEScan(SCAN_OPTIONS).then(() => {
+		navigator.bluetooth.addEventListener('advertisementreceved', event => { handleScanEvent(event); });
+	    });
+	}
+	catch(error)  { console.log('ble error: ' + error); }
+    }
+    // handle beacon
+    function handleScanEvent(event) {
+	let ble = base64toHex(event.device.id);
+	console.log(ble);
+    }
+    
+	<% else %>
+        // goto tag
+    $(document).on('change', '.path_push', function() {
+	console.log('change')
+	var here = window.location.href;
+	console.log('push', here, this.value);
+	window.location = here + '/' + this.value;
+    });
+    // goto tag
+    $(document).on('change', '.path_goto', function() {
+	console.log('change')
+	var here = window.location.href;
+	console.log('goto', this.value);
+	window.location = '/' + this.value;
+    });
+	<% end %>
+});
+
+console.log('app loaded.');

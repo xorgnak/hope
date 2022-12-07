@@ -1,0 +1,28 @@
+<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+<!-- icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!-- badges -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<!-- if authed, allow install -->
+<% if params.has_key?(:tok) %>
+<link rel="manifest" href="<%= @host.uri %>/manifest.webmanifest?cha=<%= params[:cha] %>&tok=<%= params[:tok] %>" crossorigin="use-credentials" />
+<% end %>
+
+<!-- mqtt broker -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.js'></script>
+
+<!-- jquery -->
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+
+<!-- qr generator/scanner -->
+<script src="https://cdn.jsdelivr.net/npm/jquery.qrcode@1.0.3/jquery.qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+<!-- peerjs -->
+<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+
+<!-- charts and images -->
+<!-- <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script> -->
+

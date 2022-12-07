@@ -1,0 +1,6 @@
+<div id='qrcode' style='padding: 3% 2% 3% 2%; background-color: white;'></div>
+<div>
+  <% @user['badges'].each do |e| %>
+  <span style='border: thick solid black; border-radius: 50px; padding: 2%; vertical-align: middle;'><%= e %></span>
+  <% end %>
+</div>

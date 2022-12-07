@@ -1,0 +1,31 @@
+<div style='width: 100%; text-align: center;'>
+<p style='width: 100%; text-align: center;'>
+<input name='config[name]' placeholder='name' value='<%= @user['name'] %>' style='width: 70%;'>
+</p>
+<p style='width: 100%; text-align: center;'>
+<select id='contact' name='config[contact]' style='width: 30%;'>
+<option value='none' selected>none</option>
+<option value='tel' selected>call</option>
+<option value='sms' selected>text</option>
+</select>
+<input name='config[phone]' placeholder='phone' value='<%= @user['phone'] %>' style='width: 50%;'>
+</p>
+<p style='width: 100%; text-align: center;'>
+<input name='config[link]' placeholder='link' value='<%= @user['link'] %>' style='width: 70%;'>
+</p>
+<p style='width: 100%; text-align: center;'>
+<input name='config[tips]' placeholder='tips' value='<%= @user['tips'] %>' style='width: 70%;'>
+</p>
+<p style='width: 100%; text-align: center;'>
+<input name='config[desc]' placeholder='description' value='<%= @user['desc'] %>' style='width: 70%;'>
+</p>
+<p style='width: 100%; text-align: center;'>
+<input name='config[about]' placeholder='about me...' value='<%= @user['about'] %>' style='width: 70%;'>
+</p>
+<p style='width: 100%; text-align: center;'>
+<textarea name='config[embed]' placeholder='embed...'><%= @user['embed'] %></textarea>
+</p>
+</div>
+<p style='width: 100%; text-align: right; margin: 0;'>
+<button form='app' type='button' name='do' class='do' value='config'>save</button>
+</p>

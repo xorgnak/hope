@@ -1,0 +1,48 @@
+<p style='width: 100%; margin: 0; padding: 0;'>
+<span id='name'><%= @user['name'] || 'anonymous' %></span>@<span><%= @user['group'] || @host.id %></span>
+<span style='float: right;'>
+<input id="tog" name="pic" type="checkbox" />
+<label for='tog' class='material-icons' style='width: fit-content;'></label>
+</span>
+</p>
+<div id='log' style='font-size: small; width: 100%; overflow-y: scroll; max-height: 70vh;'>
+<p style='font-size: x-small; background-color: black; color: white; width: 100%; text-align: center;'>
+<% { :rank => 'military_tech', :class=> 'hotel_class', :associates => 'favorite', :karma => 'self_improvement', :credits => 'savings', :tokens => 'toll' }.each_pair do |k,v| %>
+<% @a = @amt = @user[k.to_s].to_i %>
+<% @fix = "" %>
+<% if @amt > 999 && @amt < 1000000; @fix = "k"; @a = @amt / 1000; end %>
+<% if @amt > 1000000; @fix = "M"; @a = @amt / 1000000; end %>
+<button class='hint' value='<%= k %>' style='font-size: x-small; padding: 0 2% 0 2%; vertical-align: middle;'>
+<span class='material-icons' style='font-size: x-small;'><%= v %></span>
+<span id='<%= k %>_val'><%= @a %><%= @fix %></span>
+</button>
+<% end %>
+</p>
+<p id='pic_hint' class='hints' style='font-size: small; background-color: black; color: white; margin: 0; text-align: center; display: none;'>
+<span>captured.</span>
+</p>
+<% { :rank => 'game progress level.', :class=> 'work access level.', :karma => 'tokens accepted.', :associates => 'users in your network.', :credits => 'real world funds deposited.', :tokens => 'credit for work.' }.each_pair do |k,v| %>
+<p id='<%= k %>' class='hints' style='font-size: small; background-color: black; color: white; margin: 0; display: none;'>
+<span style='padding: 0 2% 0 2%;'><%= k %>:</span>
+<span><%= v %></span>
+</p>
+<% end %>
+</div>
+
+<p style='width: 100%; text-align: center; margin: 0; font-size: small;'>
+<input id="tog_pic" name="pic" type="checkbox" />
+<label for='tog_pic' class='material-icons' style='width: fit-content; font-size: small; margin: 0;'></label>
+<datalist id='cmds'>
+<% @datalist = ['GPS: '] %>
+<% ['img', 'name', 'desc', 'about', 'link', 'tips'].each { |e| @datalist << "#{e.upcase}: #{@user[e]}" } %>
+<% @user['users'].each { |e| if "#{e}".length > 0; @datalist << "#{e}: "; end } %>
+<% @user['groups'].each { |e| if "#{e}".length > 0; @datalist << "@#{e}: "; end } %>
+<% @host[:games].keys.each { |e| if "#{e}".length > 0; @datalist << "PLAY: #{e}"; end } %>
+<% ['PLAY', 'AWAY', 'WORK', 'QUIT'].each { |e| @datalist << "#{e}: " } %>
+<% @datalist.each do |e| %>
+<option value='<%= e %>'>
+<% end %>
+</datalist>
+<input id='input' list='cmds' name='message' placeholder='cmd&gt;' style='width: 70%; font-size: small; margin: 0;'>
+<button id='send' form='app' type='button' class='material-icons' name='do' value='info' style='font-size: small; margin: 0;' disabled>send</button>
+</p>

@@ -1,0 +1,79 @@
+<img src='<%= @host.info[:bg] %>' style='position: fixed; top: 0; left: 0; z-index: -1; width: 100vw; height: 100vh;'>
+<h3 style='position: absolute; top: 0; width: 100%; margin: 0; text-align: center;'>
+
+<% if @user != nil %>
+
+<% if @group != nil %>
+   <a class='material-icons' href='<%= @group.info[:phone] %>'>call</a>
+<% else %>
+   <a class='material-icons' href='<%= @user.info[:phone] %>'>call</a>
+<% end %>
+
+<% if @group != nil %>
+   <a class='material-icons' href='<%= @group.info[:link] %>'>link</a>
+<% else %>
+   <a class='material-icons' href='<%= @user.info[:link] %>'>link</a>
+<% end %>
+
+<% if @group != nil %>
+   <a class='material-icons' href='<%= @group.info[:store] %>'>store</a>
+<% else %>
+   <a class='material-icons' href='<%= @user.info[:store] %>'>store</a>
+<% end %>
+
+<% if @tag == nil && @group != nil %>
+  <datalist id='tags'>
+    <% @group.tag.members.each do |e| %>
+    <option value='<%= e %>'>
+    <% end %>
+  </datalist>
+
+  <input id='tag' list='tags' placeholder='tag' style='width: 20%; vertical-align: middle; margin: 0;'>
+  <button type='button' id='tagger' class='material-icons' style='vertical-align: middle;'>military_tech</button>
+<% end %>
+
+<% else %>
+  <h1 style='width: 100%; text-align: center;'>
+  <span style='border: thick solid orange; border-radius: 50px; padding: 1% 2% 0% 2%; background-color: black; color: white; text-shadow: 0px 2px orange, 0px -2px orange; box-shadow: 0px 0px 10px grey;'><%= @host.id %></span>
+  </h1>
+<% end %>
+</h3>
+
+
+<div style='position: absolute; bottom: 0; width: 100%; margin: 0; text-align: center; max-height: 60%; overflow-y: scroll;'>
+
+<% if @user != nil %>
+
+<% if @tag != nil %>
+  <p style='width: 100%; text-align: center;'><span class='material-icons'><%= @tag.info[:icon] %></span><%= @tag.info[:about] %></p>
+  
+<% else %>
+
+<% if @group != nil %>
+   <h3 style='width: 100%; text-align: center;'><%= @group.info[:name] %></h3>
+<% else %>
+   <h3 style='width: 100%; text-align: center;'><%= @user.info[:name] %></h3>
+<% end %>
+
+<% if @group != nil %>
+   <p><%= @group.info[:about] %></p>
+<% else %>
+   <p><%= @user.info[:about] %></p>
+<% end %>
+
+<% end %>
+<% else %>
+  <p><%= @host.info[:about] %></p>
+  <button type='button' id='login'>login</button>
+<% end %>
+</div>
+
+<!-- DEBUG
+<% [@host, @user, @group, @tag].each_with_index do |e, i| %>
+<% if e != nil %>
+<% e.to_h.each_pair do |k,v| %>
+<p><span><%= i %>:<%= k %></span><code><%= JSON.generate(v) %></code></p>
+<% end %>
+<% end %>
+<% end %>
+-->

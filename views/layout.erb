@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+  <style>
+   <%= erb :style %>
+</style>
+<%= erb :head %>
+</head><body>
+<form id='post' action='/js' method='POST'></form>
+<form id='auth' action='/' method='POST'></form>
+<form id='app'>
+<%= yield %>
+</form>
+<script>
+  <%= erb :jslib %>
+</script>
+</body></html>

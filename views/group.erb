@@ -1,0 +1,26 @@
+<div style='width: 100%; text-align: center;'>
+  <% @user['groups'].each do |e| %>
+  <button class='grp' value='@<%= e %>'>@<%= e %></button>
+  <% @grp = @host[:groups][e] %>
+  <% if @grp['owner'] == params[:cha] %>
+  <div id='group_<%= e %>' style='border: thin solid grey; text-align: center;'>
+    <p style='width: 100%; text-align: center; margin: 0;'><span><%= e %></span></p>
+    <textarea id='group_desc' form='app' placeholder='about' name='groups[<%= e %>][desc]' style='width: 70%;' placeholder='group description...'><%= @grp['desc'] %></textarea>
+    <textarea id='group_desc' form='app' placeholder='about' name='groups[<%= e %>][about]' style='width: 70%;' placeholder='about this group...'><%= @grp['about'] %></textarea>
+  </div>
+  <% else %>
+     <p><%= @grp[:desc] %></p>
+     <p><%= @grp[:about] %></p>
+  <% end %>
+  <% end %>
+</div>
+<div style='width: 100%; text-align: center; border: thin solid grey;'>
+  <p style='width: 100%; text-align: center; margin: 0;'><span>new group...</span></p>
+  <input id='group' placeholder='new group...' name='group[name]' style='width: 70%;'>
+  <textarea style='width: 70%;' name='group[desc]' placeholder='group description...'></textarea>
+  <textarea style='width: 70%;' name='group[about]' placeholder='about this group...'></textarea>
+</div>
+<p style='width: 100%; text-align: right; margin: 0;'>
+  <button form='app' type='button' name='do' class='do' value='group'>save</button>
+</p>
+</div>

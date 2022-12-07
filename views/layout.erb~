@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<head>
+  <style>
+    html { max-width: 100vw; max-height: 100vh; }
+<% [ :html, :button, :input, :select ].each do |e| %>
+<%= e %> { font-family: monospace; font-size: x-large; vertical-align: middle; }
+<% end %>
+body { margin: 0; padding: 0; font-family: monospace; }
+.material-icons { vertical-align: middle; }
+#canvas { position: fixed; top: 0; left: 0; z-index: -10; width: 100%; height: 100%; }
+.bg {position: fixed; top: 0; left: 0; z-index: -10; width: 100%; height: 100%; }
+.rev { background-color: black; color: white; border-radius: 50px; border: thin solid black; padding: 0 2% 0 1%; }
+a { text-decoration: none; background-color: black; border: thin outset grey; }
+</style>
+
+<%# timestamp %>
+<% @ts = Time.now.utc.to_i %>
+
+<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+<!-- icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!-- badges -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<!-- if authed, allow install -->
+<% if params.has_key?(:tok) %>
+<link rel="manifest" href="<%= @host.uri %>/manifest.webmanifest?cha=<%= params[:cha] %>&tok=<%= params[:tok] %>" crossorigin="use-credentials" />
+<% end %>
+
+<!-- mqtt broker -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.js'></script>
+
+<!-- jquery -->
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+
+<!-- qr generator/scanner -->
+<script src="https://cdn.jsdelivr.net/npm/jquery.qrcode@1.0.3/jquery.qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+<!-- peerjs -->
+<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+
+<!-- charts and images -->
+<!-- <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script> -->
+
+<script>
+  console.log('starting')
+var state = {
+    state: 1,
+    loaded: Math.round(Date.now() / 1000),
+    chance: [],
+    pos: '',
+    vapid: {},
+    <% if params.has_key? :tok %>
+	cha: '<%= params[:cha] %>',
+	<% ['name', 'about', 'desc'].each do |e| %>
+    <%= e %>: '<%= @host[:users][@host.auth.session[params[:cha]]][e] %>',
+    <% end %>
+    <% end %>
+};
+  
+function chance(j) {
+    var this_chance = {
+	rolls: [],
+	total: 0,
+	roll: "",
+	success: false
+    };
+    
+    if (j.times !== undefined) { t = parseInt(j.times) } else { t = 1 }
+    if (j.sides !== undefined) { s = parseInt(j.sides) } else { s = 2 }
+    if (j.mod !== undefined) { m = parseInt(j.mod) } else { m = 0 }
+    if (j.win !== undefined) { a = parseInt(j.win) } else { a = s - 1 }
+    for (let i = 0; i < t; i++) {
+	r = Math.floor(Math.random() * s) + 1 + m;
+	this_chance.rolls.push(r);
+	this_chance.total += r;
+    }
+    this_chance.roll = t + 'd' + s + '+' + m + '&gt;&equals;' + a;
+    if (this_chance.total > a) { this_chance.success = true }
+    return this_chance;
+}
+
+function toJson(form) {
+    const array = $('form#' + form).serializeArray(); // Encodes the set of form elements as an array of names and values.
+    const json = {};
+    $.each(array, function () {
+	json[this.name] = this.value || "";
+    });
+    return json;
+}
+
+function log(j) {
+    console.log(j);
+    var disp = true;
+    // display callback
+    if (j.from != undefined) {
+	t = '<button class="to" style="font-size: small;" value="' + j.from  + '">' + j.from + '</button>';
+	tg = '<button class="material-icons give" style="font-size: small; border-radius: 50px;" value="' + j.from  + '">volunteer_activism</button>';
+    } else {
+	t = '';
+	tg = '';
+    }
+    // display group
+    if (j.group != undefined) {
+	if (state.groups.includes(j.group) == false) { disp = false; }
+	g = '<button class="grp" style="font-size: small;" value="' + j.group  + '">' + j.group + '</button>';
+	gg = '<button class="material-icons give" style="font-size: small; border-radius: 50px;" value="' + j.group  + '">volunteer_activism</button>';
+    } else {
+	g = '';
+	gg = '';
+    }
+    // display image
+    if (j.image != undefined) {
+	i = '<img src="' + j.image + '">';
+    } else {
+	i = '';
+    }
+    // display coordinates
+    if (j.gps != undefined) {
+	cg = '<button class="material-icons goto" style="font-size: small; border-radius: 50px;" value="https://www.google.com/maps/dir/?api=1&dir_action=navagate&destination=' + j.gps + '">room</button>';
+    } else {
+	cg = ''
+    }
+    
+    if (j.vs) {
+	ch = '<button class="material-icons zap" style="font-size: small; border-radius: 50px;" value="' + j.from + '">shield</button>'
+    } else {
+	ch = ''
+    }
+    
+    if (j.icon != undefined) {
+	c = j.icon
+    } else {
+	c = 'campaign'
+    }
+    // display user avatar
+    if (j.avatar != undefined) {
+      	a = '<img src="' + j.avatar + '" style="height: 32px; width: 32px; border-radius: 50px; vertical-align: middle;">'
+    } else {
+      	a = '<img src="/anon.img" style="height: 32px; width: 32px; border-radius: 50px; vertical-align: middle;">'
+    }
+    // agents and operators can see all messages
+    if (state.class >= 5) { disp = true; }
+    if (disp != false) {
+	$('#log').append('<p>' + a + '<span class="material-icons" style="color: ' + j.color + '">' + j.icon + '</span>'+ tg + t + cg + ch + g + gg + j.message + '</p>' + i)
+    }
+}
+
+$(document).on('click', '#login', function(ev) {
+    ev.preventDefault();
+    var here = window.location.href;
+    var cha = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    window.location = here + '?cha=' + cha;
+});
+
+
+    <% Redis.new.publish 'PARAMS', "#{params}" %>
+    
+    <% if params.has_key? :tok %>
+    // authenticated?
+  console.log('LIB: user');
+  
+  window.vapidPublicKey = new Uint8Array(<%= Base64.urlsafe_decode64(public_key).bytes %>)
+  if (navigator.serviceWorker) {
+      navigator.serviceWorker.register('/sw.js?cha=<%= params[:cha] %>')
+          .then(function(reg) {
+	      console.log('Service worker change, registered the service worker');
+	      navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
+		  serviceWorkerRegistration.pushManager
+		      .subscribe({
+			  userVisibleOnly: true
+		      });
+		  serviceWorkerRegistration.pushManager.getSubscription()
+		      .then((subscription) => {
+			  state.vapid = subscription.toJSON();
+			  //webpush({ body: "ready." });
+		      });
+	      });
+	  });
+  }
+
+  function webpush(j) {
+      h = {
+	  title: j.title || '<%= @host.id %>',
+	  body: j.body || '',
+	  icon: j.icon || ''
+      }
+      $.post("/sw", { subscription: state.vapid, message: h }, function(d) {  console.log("WEBPUSH", d); });
+  }
+  
+
+  
+function mine() {
+    j = { owner: '<%= params[:cha] %>', payload: $("#payload").val(), token: '<%= params[:tok] %>', domain: '<%= @host.id %>', for: 'self' }
+    $.post('/js', j, function(data) { log(data);});
+}
+
+    <%= erb :scan %>
+    <%= erb :mqtt %>
+    <%= erb :peer %>
+    <%= erb :gps %>
+  $(function() {
+      
+    // disable empty messages
+    $('form#app').keyup(function(ev) {
+	if ($('#input').val() != '') {
+	    $('#send').css('color', 'green');
+	    $('#send').prop('disabled', false);
+	} else {
+	    $('#send').css('color', 'black');
+	    $('#send').prop('disabled', true);
+	}
+    });
+    $(document).on('click', '#tog_pic', function() {
+	if ($('#tog_pic').prop('checked')) {
+	    $(".hints").hide();
+	    $("#pic_hint").show();
+	    $('.hint').css('color', 'black');
+	} else {
+	    $('.hints').hide();
+	}
+    });
+    // toggle log;
+    $(document).on('click', '#tog', function() {
+	if ($('#tog').prop('checked')) {
+	    $('#log').hide();
+	} else {
+	    $('#log').show();
+	}
+    })
+    // background form interactions
+    $(document).on('click', '.do', function(ev){
+	ev.preventDefault();
+	var j = toJson('app');
+	j['do'] = $(this).val();
+	$.post('/js', j, function(data) {
+	    console.log("DO", data)
+	    if (data.reboot == true) {
+		window.location.href = window.location.href
+	    }
+	});
+	$('form#app')[0].reset();
+	$('.foot').hide();
+	$('#info').show();
+    });
+    // change focus
+    $(document).on('click', '.tog', function(ev) {
+	ev.preventDefault();
+	$('.foot').hide();
+	$('#' + $(this).val()).show();
+	$('.tog').css('color', 'black');
+	$(this).css('color', 'orange');
+    });
+    // show help
+    $(document).on('click', '.hint', function(ev) {
+	ev.preventDefault();
+	$(".hints").hide();
+	$("#" + $(this).val()).show();
+  	$('.hint').css('color', 'black');
+	$(this).css('color', 'orange');
+    });
+    // prefix peer
+    $(document).on('click', '.to', function(ev) {
+	ev.preventDefault();
+	$(".foot").hide();
+	$("#info").show();
+	$("#input").val($(this).val() + ": ");
+	$('#input').focus();
+    });
+    // prefix group
+    $(document).on('click', '.grp', function(ev) {
+	ev.preventDefault();
+	$(".foot").hide();
+	$("#info").show();
+	$("#input").val($(this).val() + ": ");
+	$('#input').focus();
+    });
+    $(document).on('click', '.give', function(ev) {
+	ev.preventDefault();
+	$('.foot').hide();
+	$('#scan').show();
+	$("#scanned").val($(this).val());
+    });
+    // update rank
+    $(document).on('change', '#rank', function() {
+	$('.rank').hide();
+	$('#rank_' + $(this).val()).show();
+    });
+    $(document).on('change', '#class', function() {
+	$('.class').hide();
+	$('#class_' + $(this).val()).show();
+    });
+    // toggle groups
+    $(document).on('click', '#group-tog', function(ev) {
+	ev.preventDefault();
+	$('#group').toggle();
+    });
+    // generate address
+    $(document).on('click', '.mine', function(ev) {
+	ev.preventDefault();
+	mine();
+    });
+    // challange other player
+    $(document).on('click', '.zap', function(ev) {
+	ev.preventDefault();
+	if (state.adventure != '') {
+	    state.vs = true;
+	    peer_send($(this).val(), ' zapped you...');
+	    log({ icon: 'shield', color: 'gold', message: $(this).val() + " zapped." });
+	} else {
+	    log({ icon: 'shield', color: 'red', message: "you must be on an adventure to zap other players." });
+	}
+    });
+    // follow adventure track
+    $(document).on('click', '.play', function(ev) {
+	ev.preventDefault();
+	state.adventure = $(this).val();
+	log({ icon: 'shield', message: 'adventure: ' + state.adventure, color: 'gold' });
+    });
+    // goto
+    $(document).on('click', '.goto', function(ev) {
+	ev.preventDefault();
+	window.location.href = $(this).val();
+    });
+    // goto tag
+  //  $(document).on('change', 'select', function() {
+//	console.log('change')
+//	var here = window.location.href;
+//	console.log('push', here, this.value);
+//	window.location = here + '/' + this.value;
+//    });
+    // goto tag
+//    $(document).on('change', 'select', function() {
+//	console.log('change')
+//	var here = window.location.href;
+//	console.log('goto', this.value);
+//	window.location = '/' + this.value;
+  //  });
+    
+    
+    // luck
+    $(document).on('click', '#chance_try', function(ev) {
+	ev.preventDefault();
+      	var c = chance({ 
+      	    sides: $("#chance_sides").val(), 
+      	    times: $("#chance_times").val(), 
+      	    mod: $("#chance_mod").val(), 
+      	    win: $("#chance_win").val() 
+      	});
+      	console.log(c);
+      	var cc = 'red';
+      	if ( c.success == true ) { cc = 'green'; }
+	var ss = "";
+	c.rolls.forEach(function(e){ ss += "<span style='padding: 0 1% 0 1%;'>" + e + "</span>"; });
+      	var s = "<p style='margin: 0; font-size: small;'><span style='padding: 0 2% 0 2%;'>" + c.roll + "</span><span style='padding: 0 2% 0 2%; border: thin solid " + cc + "'>" + c.total + "</span><span class='material-icons'>arrow_right</span><span style='padding: 0 2% 0 2%; border: thin solid white;'>" + ss + "</span></p>";
+      	$("#chances").append(s);
+    });
+    // SEND
+    $(document).on('click', '#send', function(ev){
+	var i = $('#input').val();
+	h = { color: 'grey', icon: 'campaign', message: i, from: '<%= @host.auth.session[params[:cha]] %>' }
+	
+	if ($('#tog_pic').prop('checked')) {
+	    var canvas = document.getElementById('canvas');
+	    var dataURL = canvas.toDataURL();
+	    h['pic'] = dataURL;
+	    h['icon'] = 'image';
+	} else {
+	    h['pic'] = '';
+	}
+	
+	if (state.pos != '') {
+	    h['gps'] = state.pos;
+	    h['icon'] = 'gps_fixed';
+	}
+	
+      	var pm = /.+: .*/g
+	var gm = /@.+: .*/g
+	if (gm.test(i)) {
+	    var ii = i.split(': ');
+	    h['group'] = ii[0];
+	    h['message'] = ii[1];
+	    h['color'] = 'blue';
+	    sendMqtt('', h)
+      	} else if (pm.test(i) ) {
+  	    var ii = i.split(': ');
+	    if (ii[0] == 'GPS') {
+		state.pos = ii[1].replace(' ', '+');
+		log({ icon: 'home', color: 'orange', message: ii[1] });
+	    } else if (ii[0] == 'NAME') {
+		state.name = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "name: " + ii[1] });
+	    } else if (ii[0] == 'DESC') {
+		state.desc = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "desc: " + ii[1] });
+	    } else if (ii[0] == 'ABOUT') {
+		state.about = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "about: " + ii[1] });
+	    } else if (ii[0] == 'LINK') {
+		state.link = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "link: <a href='" + ii[1] + "'>" + ii[1] + "</a>" });
+	    } else if (ii[0] == 'TIPS') {
+		state.tips = ii[1]
+		log({ icon: 'settings', color: 'orange', message: "tips: <a href='" + ii[1] + "'>" + ii[1] + "</a>" });
+	    } else if (ii[0] == 'PLAY') {
+		state.vs = true;
+		state.adventure = ii[1];
+		log({ icon: 'shield', color: 'orange', message: 'scan other players to score points.' });
+		sendMqtt('', { icon: 'shield', color: 'green', message: state.attr.name + ' is now playing the <button class="play" style="font-size: small;" value="' + state.adventure + '">' + state.adventure + '</button> adventure.' });
+	    } else if (ii[0] == 'QUIT') {
+		state.vs = false;
+		state.adventure = '';
+		log({ icon: 'shield', color: 'orange', message: 'continue the adventure?' });
+		sendMqtt('', { icon: 'shield', color: 'red', message: state.attr.name +  ' has left the game. (' + ii[1] + ')' });
+	    } else if (ii[0] == 'AWAY') {
+		state.vs = false;
+		log({ icon: 'shield', color: 'orange', message: 'away...' });
+		sendMqtt('', { icon: 'shield', color: 'yellow', message:  state.attr.name + ' is away. (' + ii[1] +
+			       ')' });
+	    } else if (ii[0] == 'WORK') {
+		state.vs = false;
+		state.adventure = '';
+		log({ icon: 'shield', color: 'blue', message: 'working: ' + ii[1] });
+		sendMqtt('', { icon: 'shield', color: 'blue', message: state.attr.name + ' is working. (' + ii[1] +')' });
+	    } else {
+      		peer_send(ii[0], ii[1]);
+	    }
+      	} else {
+	    sendMqtt('', h)
+        }
+	
+        $('form#app')[0].reset();
+	$('#send').css('color', 'black');
+	$('#send').prop('disabled', true);
+    });
+    // auth!
+    $(document).on('click', '#login', function(ev) {
+	ev.preventDefault();
+	var here = window.location.href;
+	var cha = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+	window.location = here + '?cha=' + cha;
+    });
+    // find beacon
+    function scanForAdvertisements() {
+	try {
+	    setInterval(function() { console.log(navigator.bluetooth); }, 1000);
+	    
+	    navigator.bluetooth.requestLEScan(SCAN_OPTIONS).then(() => {
+		navigator.bluetooth.addEventListener('advertisementreceved', event => { handleScanEvent(event); });
+	    });
+	}
+	catch(error)  { console.log('ble error: ' + error); }
+    }
+    // handle beacon
+    function handleScanEvent(event) {
+	let ble = base64toHex(event.device.id);
+	console.log(ble);
+    }
+}); 
+    <% else %>
+    console.log('LIB: visitor.');
+    <%# erb :peer %>
+    <%# erb :gps %>
+    $(function() {
+	// goto tag
+	$(document).on('change', '.path_push', function() {
+	    console.log('change')
+	    var here = window.location.href;
+	    console.log('push', here, this.value);
+	    window.location = here + '/' + this.value;
+	});
+	// goto tag
+	$(document).on('change', '.path_goto', function() {
+	    console.log('change')
+	    var here = window.location.href;
+	    console.log('goto', this.value);
+	    window.location = '/' + this.value;
+	});
+	
+    });
+  
+
+    <% end %>
+
+    console.log('app loaded.');  
+</script>
+</head><body>
+<form id='post' action='/js' method='POST'></form>
+<form id='auth' action='/' method='POST'></form>
+<form id='app'>
+<%= yield %>
+</form>
+</body></html>

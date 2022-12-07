@@ -1,0 +1,28 @@
+<button class='tog material-icons' value='info' style='color: orange;'>info</button>
+<button class='tog material-icons' value='badge'>qr_code_2</button>
+
+<button class='tog material-icons' value='group'>alternate_email</button>
+<button class='tog material-icons' value='user'>favorite</button>
+<button class='tog material-icons' value='tag'>tag</button>
+
+<%# if @host[:] == 'on' %>
+<button class='tog material-icons' value='scan'>volunteer_activism</button>
+<%# end %>
+
+<%# if @host.data[:awards] == 'on' %>
+<button class='tog material-icons' value='give'>emoji_events</button>
+<%# end %>
+
+<%# if @host.data[:fs] == 'on' %>
+<button class='tog material-icons' value='fs'>collections</button>
+<%# end %>
+
+<%# if @host.data[:bank] == 'on' %>
+<button class='tog material-icons' value='miner'>toll</button>
+<%# end %>
+
+<%# if @host.data[:luck] == 'on' %>
+<button class='tog material-icons' value='chance'>casino</button>
+<%# end %>
+
+<button class='tog material-icons' value='settings'>settings</button>

@@ -1,0 +1,42 @@
+<% Redis.new.publish '####USER', "#{@user}" %>
+<span style='float: right;'>
+<input id="tog" name="pic" type="checkbox" />
+<label for='tog' class='material-icons' style='width: fit-content;'></label>
+</span>
+<div id='log' style='font-size: small; width: 100%;'></div>
+
+
+<p id='pic_hint' class='hints' style='font-size: small; background-color: black; color: white; margin: 0; text-align: center; display: none;'>
+<span>capture picture...</span>
+</p>
+
+<% { :rank => 'Game level.', :class=> 'System level', :karma => 'Builtup goodwill.', :love => 'Network links.', :gp => 'Work credits.' }.each_pair do |k,v| %>
+<p id='<%= k %>' class='hints' style='font-size: small; background-color: black; color: white; margin: 0; display: none;'>
+<span style='padding: 0 2% 0 2%;'><%= k %>:</span>
+<span><%= v %></span>
+</p>
+<% end %>
+
+<p style='font-size: x-small; background-color: black; color: white; width: 100%; text-align: center;'>
+<% { :rank => 'military_tech', :class=> 'hotel_class', :karma => 'self_improvement', :love => 'favorite', :gp => 'toll' }.each_pair do |k,v| %>
+<% @a = @amt = @user[k].to_i %>
+<% @fix = "" %>
+<% if @amt > 999 && @amt < 1000000; @fix = "k"; @a = @amt / 1000; end %>
+<% if @amt > 1000000; @fix = "M"; @a = @amt / 1000000; end %>
+<button class='hint' value='<%= k %>' style='font-size: x-small; border: thin solid grey; border-radius: 50px; padding: 0 2% 0 2%; vertical-align: middle;'>
+<span class='material-icons' style='font-size: x-small;'><%= v %></span>
+<span id='<%= k %>_val'><%= @a %><%= @fix %></span>
+</button>
+<% end %>
+</p>
+<p style='width: 100%; text-align: center; margin: 0; font-size: small;'>
+<input id="tog_pic" name="pic" type="checkbox" />
+<label for='tog_pic' class='material-icons' style='width: fit-content; font-size: small;'></label>
+<datalist id='cmds'>
+<% [ 'OK', 'Y', 'N', 'SOS'].each do |e| %>
+<option value='<%= e %>'>
+<% end %>
+</datalist>
+<input id='input' list='cmds' name='message' placeholder='cmd&gt;' style='width: 60%; font-size: small'>
+<button id='send' form='app' type='button' class='material-icons' name='do' value='info' style='font-size: small;' disabled>send</button>
+</p>

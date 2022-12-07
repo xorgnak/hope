@@ -1,0 +1,10 @@
+<div id='items' style='text-align: left;'>
+<% @user['items'].each do |e| %>
+<p><%= e %></p>
+<% end %>
+</div>
+
+<p style='width: 100%; text-align: center;'>
+<input id='payload' placeholder='payload'>
+<button class='material-icons mine'>send</button>
+</p>

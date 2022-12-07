@@ -1,0 +1,12 @@
+<% @user['users'].each do |user| %>
+<% @usr = @host[:users][user] %>
+<div style='width: 100%;'>
+<p style='width: 100%; text-align: center;'>
+<button value='<%= user %>'><%= @usr['name'] %></button>
+<span><%= @usr['desc'] %></span>
+</p>
+<p><%= @usr['about'] %></p>
+<p style='width: 100%; text-align: center;'>
+</p>
+</div>
+<% end %>

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#sudo service redis restart
+#sudo service mosquitto restart
+#sudo pkill redis-cli
+#redis-cli monitor &
+sudo pkill peerjs
+peerjs --port 9000 --key peerjs --path /peer &
+ruby exe/init.rb $*

@@ -1,0 +1,115 @@
+<input type='hidden' name='cha' value='<%= params[:cha] %>'>
+<input type='hidden' name='tok' value='<%= params[:tok] %>'>
+<style>
+input[type="checkbox"] { width: 0; height: 0; visibility: hidden; position: fixed; top: -100}
+label { display: block; position: relative; cursor: pointer; border: thin solid white; }
+.foot { background-color: black; color: white; height: 100%; margin: 0;}
+.tog { margin: 0; }
+<% { :rank => ['military_tech', 'trending_up'], :karma => ['self_improvement', 'blur_on'], :love => ['favorite_border', 'favorite'] }.each_pair do |k,v| %>
+#give_<%= k %> + label:before { content: '<%= v[0] %>'; background-color: white; color: black; border-color: black; }
+#give_<%= k %>:checked + label:before { content: '<%= v[1] %>'; background-color: black; color: white; border-color: white; }
+<% end %>
+<% @user['items'].each do |e| %>
+#give_<%= e %> + label { background-color: white; color: black; border-color: black; }
+#give_<%= e %>:checked + label { background-color: black; color: white; border-color: white; }
+<% end %>
+<% { :pic => ['photo_camera', 'image'] }.each_pair do |k,v| %>
+#tog_<%= k %> + label:before { content: '<%= v[0] %>'; margin: 0; background-color: white; color: black; }
+#tog_<%= k %>:checked + label:before { content: '<%= v[1] %>'; margin: 0; background-color: black; color: white; }
+<% end %>
+#tog + label:before { content: 'expand_more'; margin: 0; background-color: red; color: white; }
+#tog:checked + label:before { content: 'expand_less'; margin: 0; background-color: black; color: red; }
+</style>
+
+<canvas id='canvas' style='position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -5;'></canvas>
+
+<p style='font-size: small; position: fixed; top: 0; width: 100%; margin: 0; padding: 0;'>
+  <button class='tog material-icons' value='menu' style='color: grey; border: thin outset white;'>more_vert</button>
+  <span id='title' style='vertical-align: middle; font-size: x-large;'><%= @host.id %></span>
+  <%# erb :nav %>
+</p>
+
+<div style='position: fixed; bottom: 0; width: 100%; max-height: 95%; margin: 0; overflow-y: scroll;'>
+  
+  <div id='menu' class='foot' style='display: none; text-align: left;'>
+    <%= erb :menu %>
+  </div>
+  
+  <!-- FEED -->
+  <div id='info' class='foot'>
+    <%= erb :info %>
+  </div>
+  
+  <!-- MINER -->
+  <div id='miner' class='foot' style='display: none; text-align: center;'>
+    <%= erb :miner %>
+  </div>
+  
+  <!-- CHANCE -->
+  <div id='chance' class='foot' style='display: none; text-align: center;'>
+    <%= erb :chance %>
+  </div>
+  
+  <!-- FILESYSTEM -->
+  <div id='fs' class='foot' style='display: none; text-align: center;'>
+    <%= erb :filesystem %>
+  </div>
+  
+  <!-- BADGE -->
+  <div id='badge' class='foot' style='display: none; text-align: center;'>
+    <%= erb :badge %>
+  </div>
+  
+  <!-- SETTINGS -->
+  <div id='settings' class='foot' style='display: none;'>
+    <%= erb :settings %>
+  </div>
+  
+  <!-- GROUPS -->
+  <div id='group' class='foot' style='display: none;'>
+    <%= erb :group %>
+  </div>
+
+  <!-- USERS -->
+  <div id='users' class='foot' style='display: none;'>
+    <%= erb :user %>
+  </div>
+  
+  <!-- SCAN -->
+  <div id='scan' class='foot' style='display: none;'>
+    <%= erb :scanner %>
+  </div>
+  
+  
+  <!-- TAG -->
+  <div id='tags' class='foot' style='display: none;'>
+    <%= erb :tags %>
+  </div>
+  
+  <div id='give' class='foot' style='display: none;'>
+    <%= erb :give %>
+  </div>
+  
+  <!-- END OF FOOT -->
+</div>
+
+<script>
+
+function qr(s, j) {
+  q = "<%= @host.uri %>/<%= @host.auth.session[params[:cha]] %>"
+  if (s != '') {
+    q += '/' + s
+  }
+  q += '/?'
+  $.each(j, function(k,v) {
+    q += k + '=' + v + '&';
+  });
+  $('qrcode').qrcode(q)
+}
+
+$(function() {
+  $('#qrcode').qrcode('', {});
+
+
+});
+</script>

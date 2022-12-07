@@ -1,0 +1,6 @@
+<div id='chances' style='text-align: left;'></div>
+<input id='chance_times' type='number' style='font-size: small; width: 15%;' min='0' max='<%= @user.stat[:rank].to_i + 2 %>' value='<%= @user.stat[:rank].to_i + 2  %>' maxlength='2'>
+<input id='chance_sides' type='number' style='font-size: small; width: 15%;' min='0' max='<%= @user.stat[:class].to_i + 3 %>' value='<%= @user.stat[:class].to_i + 3 %>' maxlength='3'>
+<input id='chance_mod' type='number' style='font-size: small; width: 15%;' min='0' value='0'>
+<input id='chance_win' type='number' style='font-size: small; width: 15%;' min='0' value='0'>
+<button id='chance_try' class='material-icons'>casino</button>

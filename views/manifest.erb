@@ -1,0 +1,25 @@
+{
+    "gcm_sender_id": "1006629465533",
+    "theme_color": "#f69435",
+    "background_color": "#f69435",
+    "display": "fullscreen",
+    "scope": "/",
+    "start_url": "<%= @host.uri %>/?cha=<%= params[:cha] %>&tok=<%= params[:tok] %>&installed=true",
+    "short_name": "<%= @host.id %>",
+    "description": "<%= @host.id %>",
+    "name": "<%= @host.id %>",
+    "icons": [
+	{
+	    "src": "/android-chrome-192x192.png",
+	    "sizes": "192x192",
+	    "type": "image/png",
+	    "density": "0.75"
+	},
+	{
+	    "src": "/favicon-32x32.png",
+	    "sizes": "32x32",
+	    "type": "image/png",
+	    "density": "2.0"
+	}
+    ]
+}
