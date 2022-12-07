@@ -33,7 +33,7 @@ function mqttConnect() {
 		   cleanSession: true,
 		   timeout:3,
 		   //keepAliveInterval: 10,
-		   <% if request.secure? %>
+		   <% if /https/.match(request.url) %>
 		   useSSL: true,
 		   <% end %>
 		   willMessage: lwt,
