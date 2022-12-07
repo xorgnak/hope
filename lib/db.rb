@@ -61,7 +61,7 @@ module DB
   class JOBS
     def initialize a
       @id = a
-      @db = DBM.new "db/#{@id}-jobs.db"
+      @db = DBM.new "db/#{@id}-jobs.db", 0666, DBM::WRCREAT
     end
     def db
       @db
