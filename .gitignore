@@ -1,0 +1,5 @@
+# hope gitignore
+
+# lazy no backups
+*/*~
+*~
