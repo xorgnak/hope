@@ -280,7 +280,7 @@ $(function() {
 	    str += "/<%= @host.auth.session[params[:cha]] %>/" + $("#badge_group").val();
 	}
 	$("#badge_group").hide();
-	$("#badge_invite").hide();
+	$("#badge_invite + label:before").hide();
 	$("#qrcode_1").show();
 	$("#qrcode_1").qrcode(str);
     });
