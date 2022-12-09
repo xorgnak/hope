@@ -1,19 +1,15 @@
 
-<select id='badge_path' class='badge_qrcode'>
-  <option value='/<%= @host.auth.session[params[:cha]] %>'><%= @host.id %></option>
+<select id='badge_group' style='width: 70%; margin: 0;'>
+  <option value='<%= @host.id %>' selected disabled><%= @host.id %></option>
   <% @user['groups'].each do |group| %>
-  <option value='/<%= @host.auth.session[params[:cha]] %>/<%= group %>'><%= group %></option>
+  <option value='<%= group %>'><%= group %></option>
   <% end %>
 </select>
 
-<select id='badge_mode' class='badge_qrcode'>
-  <option value='self'><%= @user['name'] %></option>
-  <% Z4.priv[0..@user['class'].to_i].each_with_index do |priv, lvl| %>
-  <option value='<%= lvl %>'>...new <%= priv[0] %></option>
-  <% end %>
-</select>
+<input type='checkbox' id='badge_invite'><label for='invite'></label>
 
-<div id='qrcode' style='padding: 3% 2% 3% 2%; background-color: white;'></div>
+<div id='qrcode_0' style='padding: 3% 2% 3% 2%; background-color: white;'></div>
+<div id='qrcode_1' style='padding: 3% 2% 3% 2%; background-color: white; display: none;'></div>
 
 <div>
   <% @user['badges'].each do |e| %>

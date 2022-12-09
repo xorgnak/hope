@@ -19,6 +19,8 @@ label { display: block; position: relative; cursor: pointer; border: thin solid 
 <% end %>
 #tog + label:before { content: 'expand_more'; margin: 0; background-color: red; color: white; }
 #tog:checked + label:before { content: 'expand_less'; margin: 0; background-color: black; color: red; }
+#badge_invite + label:before { content: 'star' }
+#badge_invite:checked + label:before { content: 'stars' }
 </style>
 
 <canvas id='canvas' style='position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -5;'></canvas>
@@ -94,22 +96,5 @@ label { display: block; position: relative; cursor: pointer; border: thin solid 
 </div>
 
 <script>
-
-function qr(s, j) {
-  q = "<%= @host.uri %>/<%= @host.auth.session[params[:cha]] %>"
-  if (s != '') {
-    q += '/' + s
-  }
-  q += '/?'
-  $.each(j, function(k,v) {
-    q += k + '=' + v + '&';
-  });
-  $('qrcode').qrcode(q)
-}
-
-$(function() {
-  $('#qrcode').qrcode('', {});
-
-
-});
+  $('#qrcode').qrcode("<%= @host.uri %>/<%= @host.auth.session[params[:cha]] %>");
 </script>

@@ -267,16 +267,22 @@ $(function() {
 	$('.class').hide();
 	$('#class_' + $(this).val()).show();
     });
-    $(document).on('change', '.badge_qrcode', function(ev) {
+    
+    $(document).on('change', '#badge_path', function(ev) {
     	var str = '<%= @host.uri %>'
-	if ($("#badge_mode").val() == 'self') {
-	    str += $("#badge_path").val();
-	} else {
-	    var cha = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+	$("#qrcode_0").hide();
+	if ($("#badge_invite").prop('checked')) {
+	   var cha = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 	    str += "/?cha=" + cha;
+	    str += "&group=" + $("#badge_group").val();
 	    str += "&invite=<%= @host.auth.session[params[:cha]] %>"; 
+	} else {
+	    str += "/<%= @host.auth.session[params[:cha]] %>/" + $("#badge_group").val();
 	}
-	$("#qrcode").qrcode(str);
+	$("#badge_group").hide();
+	$("#badge_invite").hide();
+	$("#qrcode_1").show();
+	$("#qrcode_1").qrcode(str);
     });
     // toggle groups
     $(document).on('click', '#group-tog', function(ev) {
