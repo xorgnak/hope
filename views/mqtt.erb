@@ -48,7 +48,7 @@ function mqttConnect() {
 		   }
 		 });
 }
-mqttConnect();
+//mqttConnect();
 function sendMqtt(t, j) {
     console.log('sendMqtt', j);
     j['vs'] = state.vs;
@@ -59,4 +59,3 @@ function sendMqtt(t, j) {
     message.destinationName = "<%= @host.id %>/" + t;
     mqtt.send(message);
 }
-mqttConnect();
