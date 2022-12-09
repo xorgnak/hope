@@ -407,7 +407,7 @@ $(function() {
 		state.adventure = ii[1];
 		var btn = '<button class="play" style="font-size: small;" value="' + state.adventure + '">' + state.adventure + '</button>'
 		log({ icon: 'shield', color: 'orange', message: 'scan other users and groups to earn adventure points.' });
-		sendMqtt('', {
+		sendMqtt(ii[1], {
 		    icon: 'shield',
 		    color: 'green',
 		    message: 'is now playing the ' + btn + ' adventure.'
@@ -416,7 +416,7 @@ $(function() {
 		state.vs = false;
 		state.working = false;
 		log({ icon: 'shield', color: 'orange', message: 'away...' });
-		sendMqtt('', { icon: 'shield', color: 'yellow', message:  state.name + ' is away. (' + ii[1] + ')' });
+		sendMqtt(ii[1], { icon: 'shield', color: 'yellow', message:  state.name + ' is away. (' + ii[1] + ')' });
 		
 	    } else if (ii[0] == 'WORK') {
 		state.vs = false;
@@ -425,7 +425,7 @@ $(function() {
 		state.adventure = '';
 		var btn = '<button class="work" style="font-size: small;" value="' + state.work + '">' + state.work + '</button>'
 		log({ icon: 'shield', color: 'blue', message: 'working: ' + ii[1] });
-		sendMqtt('', { icon: 'shield', color: 'blue', message: state.name + ' is working ' + btn });
+		sendMqtt(ii[1], { icon: 'shield', color: 'blue', message: state.name + ' is working ' + btn });
 	    } else {
 //		if (state.users.includes(ii[0])) {
       		    sendMqtt(ii[0], { icon: 'campaign', color: 'blue', message: ii[1] });
