@@ -1,14 +1,15 @@
 
-<select id='badge_group'>
-  <option value='/<%= @host.auth.session[params[:cha]] %>'></option>
+<select id='badge_path' class='badge_qrcode'>
+  <option value='/<%= @host.auth.session[params[:cha]] %>'><%= @host.id %></option>
   <% @user['groups'].each do |group| %>
   <option value='/<%= @host.auth.session[params[:cha]] %>/<%= group %>'><%= group %></option>
   <% end %>
 </select>
 
-<select id='badge_mode'>
+<select id='badge_mode' class='badge_qrcode'>
+  <option value='self'><%= @user['name'] %></option>
   <% Z4.priv[0..@user['class'].to_i].each_with_index do |priv, lvl| %>
-  <option value='<%= lvl %>'><%= priv[0] %></option>
+  <option value='<%= lvl %>'>...new <%= priv[0] %></option>
   <% end %>
 </select>
 

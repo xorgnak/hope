@@ -267,6 +267,17 @@ $(function() {
 	$('.class').hide();
 	$('#class_' + $(this).val()).show();
     });
+    $(document).on('change', '.badge_qrcode', function(ev) {
+    	var str = '<%= @host.uri %>'
+	if ($("#badge_mode").val() == 'self') {
+	    str += $("#badge_path").val();
+	} else {
+	    var cha = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+	    str += "/?cha=" + cha;
+	    str += "&invite=<%= @host.auth.session[params[:cha]] %>"; 
+	}
+	$("#qrcode").qrcode(str);
+    });
     // toggle groups
     $(document).on('click', '#group-tog', function(ev) {
 	ev.preventDefault();
