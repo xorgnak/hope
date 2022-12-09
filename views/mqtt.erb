@@ -13,7 +13,7 @@ mqtt.onConnectionLost = function(rO) {
 	log({ color: 'red', icon: 'notifications', message: rO.errorMessage });
 	$("#title").css('color', 'red');
 	mqtt.disconnect();
-	mqttConnect();
+//	mqttConnect();
     }
 }
 mqtt.onMessageArrived = function(message) {
@@ -44,7 +44,7 @@ function mqttConnect() {
 		   },
 		   onFailure: function() {
 		       $("#title").css('color', 'red');
-		       mqttConnect();
+//		       mqttConnect();
 		   }
 		 });
 }
@@ -59,3 +59,4 @@ function sendMqtt(t, j) {
     message.destinationName = "<%= @host.id %>/" + t;
     mqtt.send(message);
 }
+mqttConnect();

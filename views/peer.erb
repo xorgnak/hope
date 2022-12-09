@@ -1,5 +1,12 @@
 
-var peer = new Peer('<%= @host.auth.session[params[:cha]] %>', { host: '<%= @host.id %>', port: 8999, path: '/peer', debug: 0 });
+var peer = new Peer('<%= @host.auth.session[params[:cha]] %>', {
+    host: '<%= @host.id %>',
+    port: 8999,
+    path: '/peer',
+    debug: 3,
+    secure: true,
+    key: 'peerjs'
+});
 var conn = peer.connect('<%= @host.auth.session[params[:cha]] %>');
 
 function peer_send(u, p) {
@@ -40,7 +47,8 @@ peer.on('open', function(c) {
     h['message'] = 'online'
     h['icon'] = 'power'
     h['color'] = 'grey'
-    sendMqtt('', h);
+//    sendMqtt('', h);
+      log(h)
 })
 
 peer.on('connection', function(conn) {
