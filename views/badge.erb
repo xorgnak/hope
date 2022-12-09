@@ -12,12 +12,16 @@
 <div id='qrcode_1' style='padding: 3% 2% 3% 2%; background-color: white; display: none;'></div>
 
 <div>
+  <div id='badge_badges'>
   <% @user['badges'].each do |e| %>
   <span style='border: thick solid black; border-radius: 50px; padding: 2%; vertical-align: middle;'><%= e %></span>
   <% end %>
+  </div>
+  <div id='badge_tgt'>
   <% @user['groups'].each do |e| %>
   <p style='width: 100%; text-align: center;'>
     <span style='border: thick solid black; border-radius: 50px; padding: 2%; vertical-align: middle;'><%= e %></span>
   </p>
   <% end %>
+  </div>
 </div>
