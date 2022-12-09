@@ -1,5 +1,5 @@
 
-var peer = new Peer('<%= params[:cha] %>', {
+var peer = new Peer({
     host: '<%= @host.id %>',
     port: 8999,
     path: '/peer',
@@ -44,7 +44,7 @@ function peer_send(u, p) {
 
 peer.on('open', function(c) {
     h = {}
-    h['message'] = 'online'
+    h['message'] = c
     h['icon'] = 'power'
     h['color'] = 'grey'
 //    sendMqtt('', h);
