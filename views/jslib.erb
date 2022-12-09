@@ -417,7 +417,7 @@ $(function() {
 		sendMqtt('', { icon: 'shield', color: 'blue', message: state.name + ' is working ' + btn });
 	    } else {
 		if (state.users.includes(ii[0])) {
-      		    sendMqtt(ii[0], { color: 'grey', message: ii[1] });
+      		    sendMqtt(ii[0], { icon: 'campaign', color: 'blue', message: ii[1] });
 		}
 	    }
       	} else {

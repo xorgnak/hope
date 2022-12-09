@@ -39,7 +39,7 @@ function mqttConnect() {
 		   willMessage: lwt,
 		   onSuccess: function() {
 		       mqtt.subscribe('<%= @host.id %>/');
-		       mqtt.subscribe('<%= @host.id %>/<%= @host.auth.session[params[:cha]] %>')
+		       mqtt.subscribe('<%= @host.id %>/users/<%= @host.auth.session[params[:cha]] %>')
 		       $("#title").css('color', 'orange');
 		       sendMqtt('', { icon: 'notifications', color: 'green', message: 'connected.' });
 		   },
@@ -60,4 +60,8 @@ function sendMqtt(t, j) {
     message.destinationName = "<%= @host.id %>/" + t;
     mqtt.send(message);
 }
+function sendUser(u, j) {
+	 sendMqtt("users/" + u, j);
+}
+
 mqttConnect();

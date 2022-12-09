@@ -881,3 +881,9 @@ D, [2022-12-09T02:25:05.550392 #7106] DEBUG -- : No previous session found by se
 I, [2022-12-09T02:25:05.831986 #7106]  INFO -- : New packet PahoMqtt::Packet::Suback received.
 D, [2022-12-09T02:26:11.837124 #7106] DEBUG -- : No activity is over timeout, disconnecting from broker.hivemq.com.
 D, [2022-12-09T02:26:11.837617 #7106] DEBUG -- : Disconnecting from broker.hivemq.com.
+D, [2022-12-09T02:59:44.110182 #7582] DEBUG -- : Attempt to connect to host: broker.hivemq.com...
+D, [2022-12-09T02:59:44.611923 #7582] DEBUG -- : Connection accepted
+D, [2022-12-09T02:59:44.612323 #7582] DEBUG -- : No previous session found by server, starting a new one.
+I, [2022-12-09T02:59:44.841947 #7582]  INFO -- : New packet PahoMqtt::Packet::Suback received.
+D, [2022-12-09T03:00:50.845987 #7582] DEBUG -- : No activity is over timeout, disconnecting from broker.hivemq.com.
+D, [2022-12-09T03:00:50.846537 #7582] DEBUG -- : Disconnecting from broker.hivemq.com.
