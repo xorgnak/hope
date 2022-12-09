@@ -137,7 +137,7 @@ $(document).on('click', '#login', function(ev) {
 		  serviceWorkerRegistration.pushManager.getSubscription()
 		      .then((subscription) => {
 			  state.vapid = subscription.toJSON();
-webpush({ body: "ready." });
+//webpush({ body: "ready." });
 		      });
 	      });
 	  });
@@ -166,7 +166,7 @@ function mine() {
 }
     <% if params.has_key? :tok %>
     <%= erb :mqtt %>
-    <%= erb :peer %>
+    <%# erb :peer %>
     <%= erb :scan %>
     <% end %>
     <%= erb :gps %>
