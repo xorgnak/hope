@@ -1,6 +1,6 @@
 
 // Create a client instance
-const mqtt = new Paho.Client('<%= @host.id %>', 8883, "<%= @host.auth.session[params[:cha]] %>");
+const mqtt = new Paho.Client('vango.me', 8883, "<%= @host.auth.session[params[:cha]] %>");
 
 lwt_p = state;
 lwt_p['state'] = 0;
