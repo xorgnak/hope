@@ -268,7 +268,7 @@ $(function() {
 	$('#class_' + $(this).val()).show();
     });
     
-    $(document).on('change', '#badge_path', function(ev) {
+    $(document).on('change', '#badge_group', function(ev) {
     	var str = '<%= @host.uri %>'
 	$("#qrcode_0").hide();
 	if ($("#badge_invite").prop('checked')) {

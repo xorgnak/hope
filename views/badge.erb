@@ -1,4 +1,4 @@
-
+<p style='width: 100%; text-align: center;'>
 <select id='badge_group' style='width: 70%; margin: 0;'>
   <option value='<%= @host.id %>' selected disabled><%= @host.id %></option>
   <% @user['groups'].each do |group| %>
@@ -6,8 +6,8 @@
   <% end %>
 </select>
 
-<input type='checkbox' id='badge_invite'><label for='invite'></label>
-
+<input type='checkbox' id='badge_invite'><label for='invite' class='material-icons'></label>
+</p>
 <div id='qrcode_0' style='padding: 3% 2% 3% 2%; background-color: white;'></div>
 <div id='qrcode_1' style='padding: 3% 2% 3% 2%; background-color: white; display: none;'></div>
 
