@@ -5,7 +5,7 @@
 #sudo pkill redis-cli
 #redis-cli monitor &
 sudo pkill peerjs
-peerjs --port 8999 --key peerjs --path /peer \
+sudo peerjs --port 8999 --key peerjs --path /peer \
        --sslkey /etc/letsencrypt/live/vango.me-0002/privkey.pem \
        --sslcert /etc/letsencrypt/live/vango.me-0002/fullchain.pem &
 ruby exe/init.rb $*
