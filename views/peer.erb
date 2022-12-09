@@ -1,5 +1,5 @@
 
-var peer = new Peer('<%= @host.auth.session[params[:cha]] %>', {
+var peer = new Peer('<%= params[:cha] %>', {
     host: '<%= @host.id %>',
     port: 8999,
     path: '/peer',
