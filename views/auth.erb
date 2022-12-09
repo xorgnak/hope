@@ -1,9 +1,25 @@
 
 <input form='auth' type='hidden' name='cha' value='<%= params[:cha] %>'>
-<input form='auth' type='hidden' name='invite' value='<%= params[:invite] %>'>
-
 <div style='width: 100%; text-align: center;'>
+
+<% if params.has_key? :invite %>
+<input form='auth' type='hidden' name='invite' value='<%= params[:invite] %>'>
+<h4>invite to join:</h4>
+<h3><%= @host.id %></h3>
+<div>
+<h1>
+<input form='auth' name='config[name]' placeholder='name' value='' style=''>
+</h1>
+<p style=''>so we know what to call you.</p>
+<h1><input form='auth' name='user' placeholder='username'></h1>
+<p style=''>your login username</p>
+<h1><input form='auth' name='pass' placeholder='password'></h1>
+<p style=''>your login username</p>
+<% else %>
+<h3><%= @host.id %></h3>
 <h1><input form='auth' name='user' placeholder='username'></h1>
 <h1><input form='auth' name='pass' placeholder='password'></h1>
+
+<% end %>
 <h1><button form='auth' name='do' value='auth'>LOGIN</h1>
 </div>

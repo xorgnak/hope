@@ -73,10 +73,9 @@ module Z4
         if params.has_key?(:invite) && "#{params[:user]}".length > 0
           @host.friend params[:invite], params[:user]
           @host.friend params[:user], params[:invite]
-          #@host.follow params[:invite], params[:user]
-          #@host.follow params[:user], params[:invite]
           @host.auth.auth! params[:user], params[:pass]
           @host[:users][params[:user]]
+          params[:config].each_pair { |k,v| @host[:users].update(params[:user], k, v) }
         end
         if c = @host.auth.auth?(params[:user], params[:pass], params[:cha])
           tok = []; 16.times { tok << rand(16).to_s(16) }
@@ -118,7 +117,7 @@ module Z4
           @grp = params[:group][:name]
           @host[:groups].update(@grp, 'about', params[:group][:about])
           @host[:groups].update(@grp, 'desc', params[:group][:desc])
-          @host[:groups].update(@grp, 'owner', params[:cha])
+          @host[:groups].update(@grp, 'owner', @host.auth.session[params[:cha]])
           @host[:groups].update(@grp, 'parent', @host[:users][@user]['group'] || @host.id)
           @out['reboot'] = true
         end
