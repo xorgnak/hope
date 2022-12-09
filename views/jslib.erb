@@ -415,7 +415,7 @@ $(function() {
 		sendMqtt('', { icon: 'shield', color: 'blue', message: state.name + ' is working ' + btn });
 	    } else {
 		if (state.users.includes(ii[0])) {
-      		    peer_send(ii[0], { color: 'grey', message: ii[1]);
+      		    sendMqtt(ii[0], { color: 'grey', message: ii[1] });
 		}
 	    }
       	} else {
