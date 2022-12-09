@@ -1,5 +1,19 @@
-<button type='button' class='invite' value='<%= @host.auth.session[params[:cha]] %>'>invite</button>
+
+<select id='badge_group'>
+  <option value='/<%= @host.auth.session[params[:cha]] %>'></option>
+  <% @user['groups'].each do |group| %>
+  <option value='/<%= @host.auth.session[params[:cha]] %>/<%= e %>'><%= e %></option>
+  <% end %>
+</select>
+
+<select id='badge_mode'>
+  <% Z4.priv[0..@user['class'].to_i].each_with_index do |priv, lvl| %>
+  <option value='<%= lvl %>'><%= priv[0] %></option>
+  <% end %>
+</select>
+
 <div id='qrcode' style='padding: 3% 2% 3% 2%; background-color: white;'></div>
+
 <div>
   <% @user['badges'].each do |e| %>
   <span style='border: thick solid black; border-radius: 50px; padding: 2%; vertical-align: middle;'><%= e %></span>
