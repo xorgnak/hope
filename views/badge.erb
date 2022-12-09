@@ -2,7 +2,7 @@
 <select id='badge_group'>
   <option value='/<%= @host.auth.session[params[:cha]] %>'></option>
   <% @user['groups'].each do |group| %>
-  <option value='/<%= @host.auth.session[params[:cha]] %>/<%= e %>'><%= e %></option>
+  <option value='/<%= @host.auth.session[params[:cha]] %>/<%= group %>'><%= group %></option>
   <% end %>
 </select>
 
