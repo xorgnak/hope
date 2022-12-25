@@ -10,7 +10,7 @@ var h = <%= JSON.generate({}.merge(params)) %>;
 function showPosition(position) {
   h['gps'] = position.coords.latitude + "," + position.coords.longitude;
   console.log(h);
-  $.post('/box', h, function(d){
+  $.post('/dev', h, function(d){
     console.log(d);
     window.location = d.goto;
   });

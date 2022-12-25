@@ -135,7 +135,7 @@ module Z4
       end
     end
 
-    post '/box' do
+    post '/dev
       content_type 'application/json'
       g = params.delete(:goto)
       a = []; psarams.each_pair { |k,v| a << %[#{k}=#{v}] }
@@ -143,7 +143,7 @@ module Z4
       return JSON.generate(params)
     end
     
-    get '/gps' do
+    get '/dev' do
       @user = @host[:users][params[:username]];
       erb :box
     end
