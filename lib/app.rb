@@ -135,7 +135,7 @@ module Z4
       end
     end
 
-    post '/dev
+    post '/dev' do
       content_type 'application/json'
       g = params.delete(:goto)
       a = []; psarams.each_pair { |k,v| a << %[#{k}=#{v}] }
