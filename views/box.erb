@@ -12,7 +12,7 @@ function showPosition(position) {
   console.log(h);
   $.post('/dev', h, function(d){
     console.log(d);
-    window.location = d.goto;
+    window.location = 'http://' + d.goto;
   });
 }
   
