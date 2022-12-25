@@ -145,7 +145,7 @@ module Z4
     
     get '/dev' do
       if @host[:users].has_key? params[:u]
-        if @host.auth? params[:u], params[:p], @host.auth.session[params[:u]]
+        if @host.auth.auth? params[:u], params[:p], @host.auth.session[params[:u]]
           @user = @host[:users][params[:u]];
           erb :box
         else
