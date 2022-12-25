@@ -52,16 +52,16 @@ function mqttConnect() {
 
 function sendMqtt(t, j) {
     console.log('sendMqtt', j);
+    message = new Paho.Message(j);
+    message.destinationName = "<%= @host.id %>/" + t;
+    mqtt.send(message);
+}
+function sendUser(t, j) {
     j['vs'] = state.vs;
     j['from'] = state.name || 'anonymous';
     j['rank'] = state.rank;
     j['class'] = state.class;
-    message = new Paho.Message(JSON.stringify(j));
-    message.destinationName = "<%= @host.id %>/" + t;
-    mqtt.send(message);
-}
-function sendUser(u, j) {
-	 sendMqtt("users/" + u, j);
+    sendMqtt(t, JSON.stringify(j));
 }
 
 mqttConnect();
