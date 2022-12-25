@@ -144,8 +144,16 @@ module Z4
     end
     
     get '/dev' do
-      @user = @host[:users][params[:username]];
-      erb :box
+      if @host[:users].has_key? params[:u]
+        if @host.auth? params[:u], params[:p], @host.auth.session[params[:u]]
+          @user = @host[:users][params[:u]];
+          erb :box
+        else
+          redirect '/'
+        end
+      else
+        redirect '/'
+      end
     end
     
     get '/' do
