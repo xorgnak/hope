@@ -41,11 +41,11 @@ function mqttConnect() {
 		       mqtt.subscribe('<%= @host.id %>/');
 		       mqtt.subscribe('<%= @host.id %>/<%= @host.auth.session[params[:cha]] %>')
 		       $("#title").css('color', 'orange');
-		       sendMqtt('', { icon: 'notifications', color: 'green', message: 'connected.' });
+		       sendUser('', { icon: 'notifications', color: 'green', message: 'connected.' });
 		   },
 		   onFailure: function() {
 		       $("#title").css('color', 'red');
-//		       mqttConnect();
+		       mqttConnect();
 		   }
 		 });
 }
