@@ -137,7 +137,9 @@ module Z4
 
     post '/box' do
       content_type 'application/json'
+      g = params.delete(:goto)
       a = []; psarams.each_pair { |k,v| a << %[#{k}=#{v}] }
+      params[:goto] = g + '/?' + a.join('&')
       return JSON.generate(params)
     end
     

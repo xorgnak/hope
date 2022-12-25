@@ -1,0 +1,24 @@
+<p style='width: 100%; text-align: center;'>
+<span><%= @host.id %></span>
+</p>
+<div id='log' style='font-size: small;'>
+<p style='width: 100%; text-align: center;'>running...</p>
+</div>
+<script>
+var h = <%= JSON.generate({}.merge(params)) %>;
+  
+function showPosition(position) {
+  h['gps'] = position.coords.latitude + "," + position.coords.longitude;
+  console.log(h);
+  $.post('/box', h, function(d){
+    console.log(d);
+    window.location = d.goto;
+  });
+}
+  
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(showPosition);
+} else {
+  $("#log").append("<p>Geolocation is not supported by this browser.</p>");
+}
+</script>
