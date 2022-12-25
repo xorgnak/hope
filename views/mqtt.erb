@@ -28,7 +28,16 @@ mqtt.onMessageArrived = function(message) {
 	    }
 	}
     } else {
-	var j = { message: payload, icon: 'notifications', color: 'grey', from: topic }
+	var pp = payload.split(' ')
+	if (pp[0] == 'DEV') {
+	    var ppp = pp[3].split('/')
+	    var dev = ppp[1];
+	    var ip = pp[1];
+	    var msg = dev + ' listening at ' + ip
+	    var j = { message: msg, icon: 'devices', color: 'green', from: '>' + dev }
+	} else {
+	    var j = { message: payload, icon: 'message', color: 'grey' }
+	}
     }
     log(j);
 }
