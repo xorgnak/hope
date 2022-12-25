@@ -33,7 +33,7 @@ mqtt.onMessageArrived = function(message) {
 	    var ppp = pp[3].split('/')
 	    var dev = ppp[1];
 	    var ip = pp[1];
-	    var msg = dev + ' listening at ' + ip
+	    var msg = 'listening on ' + ip
 	    var j = { message: msg, icon: 'devices', color: 'green', from: '>' + dev }
 	} else {
 	    var j = { message: payload, icon: 'message', color: 'grey' }
@@ -52,7 +52,7 @@ function mqttConnect() {
 		   <%# end %>
 		   willMessage: lwt,
 		   onSuccess: function() {
-		       mqtt.subscribe('<%= @host.id %>/');
+		       //mqtt.subscribe('<%= @host.id %>/');
 		       mqtt.subscribe('<%= @host.id %>/<%= @host.auth.session[params[:cha]] %>')
 		       $("#title").css('color', 'orange');
 		       sendUser('', { icon: 'notifications', color: 'green', message: 'connected.' });
