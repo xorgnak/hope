@@ -19,11 +19,16 @@ mqtt.onConnectionLost = function(rO) {
 mqtt.onMessageArrived = function(message) {
     console.log("mqtt", message);
     var topic = message.destinationName;
-    var j = JSON.parse(message.payloadString);
-    if (j.update) {
-		for (const [key, value] of Object.entries(j.update)) {
-		  $("#" + `${key}` + "_val").text(`${value}`);
-		}
+    var payload = message.payloadString;
+    if (payload[0] == '{') {
+	var j = JSON.parse(message.payloadString);
+	if (j.update) {
+	    for (const [key, value] of Object.entries(j.update)) {
+		$("#" + `${key}` + "_val").text(`${value}`);
+	    }
+	}
+    } else {
+	var j = { message: payload, icon: 'notifications', color: 'grey', from: topic }
     }
     log(j);
 }
